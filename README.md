@@ -1,8 +1,9 @@
 # Overview
 Mesh deformation example using biharmonic and ARAP methods.  
 Inherited from CSC2520 Geometry Processing [Deformation](https://github.com/alecjacobson/geometry-processing-deformation) Assignment.  
-Using polyscope for visualization.
-<img src="deformation.png" alt="img1" width="600"/>   
+Using polyscope for visualization.  
+
+<img src="deformation.png" alt="img1" width="800"/>   
 
 # Execution
 > **To get started:** follow instructions below
