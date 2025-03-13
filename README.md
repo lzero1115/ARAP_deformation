@@ -17,4 +17,6 @@ Using polyscope for visualization.
 >     ./ARAP [path to mesh]
 > 
 
-
+# References
+[1] Alec Jacobson, Ilya Baran, Jovan Popović, and Olga Sorkine. Bounded Biharmonic Weights for Real-Time Deformation, 2011. 
+[2] Olga Sorkine and Marc Alexa. As-rigid-as-possible Surface Modeling, 2007. ↩
