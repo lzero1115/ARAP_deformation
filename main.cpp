@@ -94,37 +94,53 @@ bool rayTriangleIntersect(
     return (t > EPSILON);
 }
 
-// Find closest point on mesh to ray
 bool find_closest_vertex(const ImVec2& mousePos, int& closest_vertex) {
     auto [rayOrigin, rayDir] = unproject(mousePos);
-
-    // Find the closest vertex to the ray
-    float min_dist = std::numeric_limits<float>::max();
-    closest_vertex = -1;
-
-    for (int i = 0; i < V.rows(); i++) {
-        glm::vec3 vertex(V(i, 0), V(i, 1), V(i, 2));
-
-        // Calculate distance from ray to vertex
-        glm::vec3 v_to_o = vertex - rayOrigin;
-        float proj_len = glm::dot(v_to_o, rayDir);
-        glm::vec3 closest_point = rayOrigin + proj_len * rayDir;
-        float dist = glm::distance(vertex, closest_point);
-
-        // Use screen-space distance threshold
-        glm::vec2 screenPos = worldToScreen(vertex);
-        glm::vec2 mouseVec(mousePos.x, mousePos.y);
-        float screenDist = glm::length(screenPos - mouseVec);
-
-        // Only consider vertices close enough to the ray
-        if (dist < min_dist && screenDist < 20.0f) { // 20 pixels threshold
-            min_dist = dist;
-            closest_vertex = i;
+    
+    // Find the first triangle that intersects with the ray
+    float closest_t = std::numeric_limits<float>::max();
+    int hit_triangle = -1;
+    glm::vec3 intersection_point;
+    
+    // Check each triangle for intersection
+    for (int i = 0; i < F.rows(); i++) {
+        glm::vec3 v0(V(F(i, 0), 0), V(F(i, 0), 1), V(F(i, 0), 2));
+        glm::vec3 v1(V(F(i, 1), 0), V(F(i, 1), 1), V(F(i, 1), 2));
+        glm::vec3 v2(V(F(i, 2), 0), V(F(i, 2), 1), V(F(i, 2), 2));
+        
+        float t;
+        if (rayTriangleIntersect(rayOrigin, rayDir, v0, v1, v2, t)) {
+            if (t < closest_t) {
+                closest_t = t;
+                hit_triangle = i;
+                intersection_point = rayOrigin + rayDir * t;
+            }
         }
     }
-
-    return (closest_vertex >= 0);
+    
+    // If we hit a triangle, find the closest vertex of that triangle
+    if (hit_triangle >= 0) {
+        float min_dist = std::numeric_limits<float>::max();
+        closest_vertex = -1;
+        
+        // Check only the vertices of the hit triangle
+        for (int j = 0; j < 3; j++) {
+            int vertex_idx = F(hit_triangle, j);
+            glm::vec3 vertex(V(vertex_idx, 0), V(vertex_idx, 1), V(vertex_idx, 2));
+            float dist = glm::distance(vertex, intersection_point);
+            
+            if (dist < min_dist) {
+                min_dist = dist;
+                closest_vertex = vertex_idx;
+            }
+        }
+        
+        return true;
+    }
+    
+    return false;
 }
+
 
 // Update visualization based on current state
 void update() {
