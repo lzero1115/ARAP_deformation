@@ -14,6 +14,7 @@ Using polyscope for visualization.
 >     cd build
 >     cmake ..
 >     make
+>     cd bin
 >     ./ARAP [path to mesh]
 > 
 
